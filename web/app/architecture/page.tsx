@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ArchitectureDiagram from '@/components/ArchitectureDiagram'
 import CodeBlock from '@/components/CodeBlock'
+import { Database, ChevronRight } from 'lucide-react'
 
 const LIFESPAN_CODE = `@asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -98,120 +99,148 @@ async def _stream_response(rag_chain, request, history):
         yield f"data: {json.dumps(token)}\\n\\n"
     yield "data: [DONE]\\n\\n"`
 
+const DESIGN_DECISIONS = [
+  {
+    title: 'Protocol for EmbeddingProvider',
+    desc: 'Structural subtyping via Protocol enables swapping OpenAI for local sentence-transformers without modifying call sites.',
+  },
+  {
+    title: 'EphemeralClient Fallback',
+    desc: 'VectorStoreService.initialize() catches connection errors and falls back to an in-memory ChromaDB client, making tests and CI work without Docker.',
+  },
+  {
+    title: 'Fire-and-Forget Ingestion',
+    desc: 'asyncio.create_task() immediately returns the document record with status=pending. Clients poll GET /documents/{id} for completion.',
+  },
+  {
+    title: 'Metadata as str dict',
+    desc: 'ChromaDB requires all metadata values to be strings. Explicit str() conversion prevents runtime errors for numeric chunk indices.',
+  },
+  {
+    title: 'BM25 Concurrent with Semantic',
+    desc: 'asyncio.to_thread wraps the synchronous BM25 search so it runs concurrently with the async vector store query via asyncio.gather.',
+  },
+  {
+    title: 'Semaphore Rate Limiting',
+    desc: 'A single asyncio.Semaphore(10) on the embedding client prevents overwhelming the OpenAI tokens-per-minute limit during batch ingestion.',
+  },
+]
+
+const CODE_SECTIONS = [
+  {
+    num: '01',
+    title: 'FastAPI Lifespan — Resource Management',
+    desc: 'All services are initialized once at startup using the async lifespan context manager (FastAPI 0.93+ pattern). This avoids global state and ensures graceful shutdown of resources.',
+    file: 'app/main.py',
+    code: LIFESPAN_CODE,
+    lang: 'python',
+  },
+  {
+    num: '02',
+    title: 'Hybrid Retrieval — Concurrent Search + RRF',
+    desc: 'Semantic and keyword search run in parallel via asyncio.gather. asyncio.to_thread wraps the synchronous BM25 search to keep the event loop free.',
+    file: 'app/services/retriever.py',
+    code: RETRIEVER_CODE,
+    lang: 'python',
+  },
+  {
+    num: '03',
+    title: 'Async Ingestion Pipeline — Concurrent + Rate Limited',
+    desc: 'Documents are chunked, embedded in batches of 100, and indexed into both the vector store and BM25 in a single pipeline. A semaphore limits concurrency to prevent API rate limit violations.',
+    file: 'app/services/ingestion.py',
+    code: INGESTION_CODE,
+    lang: 'python',
+  },
+  {
+    num: '04',
+    title: 'Pydantic v2 — Validation + Configuration',
+    desc: 'Every request and response is validated with Pydantic v2 models using ConfigDict, field_validator, and constraint fields. Settings use BaseSettings with env_prefix for 12-factor config management.',
+    file: 'app/models/schemas.py',
+    code: PYDANTIC_CODE,
+    lang: 'python',
+  },
+  {
+    num: '05',
+    title: 'SSE Streaming — Real-Time Token Delivery',
+    desc: 'The chat endpoint supports Server-Sent Events streaming. Tokens are JSON-encoded to safely handle special characters, with a [DONE] sentinel and error recovery.',
+    file: 'app/api/routes/chat.py',
+    code: STREAMING_CODE,
+    lang: 'python',
+  },
+]
+
 export default function ArchitecturePage() {
   return (
-    <div className="min-h-screen grid-bg">
+    <div className="min-h-screen bg-[#020617] grid-bg">
       <Header />
 
-      <main className="pt-24 pb-16 px-4">
+      <main className="pt-20 pb-16 px-4">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+
+          {/* Page header */}
+          <div className="pt-6 pb-10">
+            <div className="flex items-center gap-2 mb-4">
+              <Database className="w-4 h-4 text-cyan-500/60" />
+              <span className="text-xs font-mono text-cyan-500/50 uppercase tracking-widest">
+                System Design
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-3">
               <span className="gradient-text">System Architecture</span>
             </h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-500 max-w-2xl text-sm">
               A deep dive into every design decision — from async lifespan management
-              to Reciprocal Rank Fusion.
+              to Reciprocal Rank Fusion. Every component is production-grade.
             </p>
           </div>
 
           {/* Full architecture diagram */}
           <ArchitectureDiagram compact={false} />
 
-          {/* Component deep dives */}
-          <div className="mt-16 space-y-12">
-            <div>
-              <h2 className="text-2xl font-bold mb-2 text-slate-100">
-                1. FastAPI Lifespan — Resource Management
-              </h2>
-              <p className="text-slate-400 mb-4">
-                All services are initialized once at startup using the async lifespan context
-                manager (FastAPI 0.93+ pattern). This avoids global state and ensures graceful
-                shutdown of resources.
-              </p>
-              <CodeBlock title="app/main.py" language="python" code={LIFESPAN_CODE} />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-2 text-slate-100">
-                2. Hybrid Retrieval — Concurrent Search + RRF
-              </h2>
-              <p className="text-slate-400 mb-4">
-                Semantic and keyword search run in parallel via asyncio.gather.
-                asyncio.to_thread wraps the synchronous BM25 search to keep the event loop free.
-              </p>
-              <CodeBlock title="app/services/retriever.py" language="python" code={RETRIEVER_CODE} />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-2 text-slate-100">
-                3. Async Ingestion Pipeline — Concurrent + Rate Limited
-              </h2>
-              <p className="text-slate-400 mb-4">
-                Documents are chunked, embedded in batches of 100, and indexed into both the
-                vector store and BM25 in a single pipeline. A semaphore limits concurrency to
-                prevent API rate limit violations.
-              </p>
-              <CodeBlock title="app/services/ingestion.py" language="python" code={INGESTION_CODE} />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-2 text-slate-100">
-                4. Pydantic v2 — Validation + Configuration
-              </h2>
-              <p className="text-slate-400 mb-4">
-                Every request and response is validated with Pydantic v2 models using ConfigDict,
-                field_validator, and constraint fields. Settings use BaseSettings with env_prefix
-                for 12-factor config management.
-              </p>
-              <CodeBlock title="app/models/schemas.py + config.py" language="python" code={PYDANTIC_CODE} />
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-bold mb-2 text-slate-100">
-                5. SSE Streaming — Real-Time Token Delivery
-              </h2>
-              <p className="text-slate-400 mb-4">
-                The chat endpoint supports Server-Sent Events streaming. Tokens are JSON-encoded
-                to safely handle special characters, with a [DONE] sentinel and error recovery.
-              </p>
-              <CodeBlock title="app/api/routes/chat.py" language="python" code={STREAMING_CODE} />
-            </div>
+          {/* Code sections */}
+          <div className="mt-16 space-y-14">
+            {CODE_SECTIONS.map((section) => (
+              <div key={section.num}>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/8 border border-cyan-500/20
+                                  flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-bold font-mono text-cyan-400">{section.num}</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-100 mb-1">
+                      {section.title}
+                    </h2>
+                    <p className="text-slate-500 text-sm">{section.desc}</p>
+                  </div>
+                </div>
+                <CodeBlock title={section.file} language={section.lang} code={section.code} />
+              </div>
+            ))}
           </div>
 
           {/* Design decisions */}
           <div className="mt-16">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-mono text-cyan-500/50 uppercase tracking-widest">
+                Engineering Decisions
+              </span>
+            </div>
             <h2 className="text-2xl font-bold mb-6 text-slate-100">Key Design Decisions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                {
-                  title: 'Protocol for EmbeddingProvider',
-                  desc: 'Structural subtyping via Protocol enables swapping OpenAI for local sentence-transformers without modifying call sites.',
-                },
-                {
-                  title: 'EphemeralClient Fallback',
-                  desc: 'VectorStoreService.initialize() catches connection errors and falls back to an in-memory ChromaDB client, making tests and CI work without Docker.',
-                },
-                {
-                  title: 'Fire-and-Forget Ingestion',
-                  desc: 'asyncio.create_task() immediately returns the document record with status=pending. Clients poll GET /documents/{id} for completion.',
-                },
-                {
-                  title: 'Metadata as str dict',
-                  desc: 'ChromaDB requires all metadata values to be strings. Explicit str() conversion prevents runtime errors for numeric chunk indices.',
-                },
-                {
-                  title: 'BM25 Concurrent with Semantic',
-                  desc: 'asyncio.to_thread wraps the synchronous BM25 search so it runs concurrently with the async vector store query via asyncio.gather.',
-                },
-                {
-                  title: 'Semaphore Rate Limiting',
-                  desc: 'A single asyncio.Semaphore(10) on the embedding client prevents overwhelming the OpenAI tokens-per-minute limit during batch ingestion.',
-                },
-              ].map(({ title, desc }) => (
-                <div key={title} className="glass rounded-xl p-5 border border-indigo-500/10">
-                  <div className="font-semibold text-indigo-300 mb-2 text-sm">{title}</div>
-                  <div className="text-sm text-slate-400">{desc}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {DESIGN_DECISIONS.map(({ title, desc }) => (
+                <div
+                  key={title}
+                  className="glass-card rounded-xl p-5 border border-cyan-500/8
+                             hover:border-cyan-500/20 transition-all duration-200 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <ChevronRight className="w-3.5 h-3.5 text-cyan-500/50 flex-shrink-0 mt-0.5
+                                            group-hover:text-cyan-400 transition-colors" />
+                    <div>
+                      <div className="font-semibold text-cyan-400/80 mb-1.5 text-sm">{title}</div>
+                      <div className="text-xs text-slate-500 leading-relaxed">{desc}</div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

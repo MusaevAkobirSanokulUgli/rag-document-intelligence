@@ -35,7 +35,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-[#0f0f1a] text-slate-100 antialiased">
+      <body className="bg-[#020617] text-slate-100 antialiased">
         {children}
       </body>
     </html>

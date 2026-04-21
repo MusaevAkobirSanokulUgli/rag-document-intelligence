@@ -8,110 +8,110 @@ interface ArchitectureDiagramProps {
 
 const PIPELINE_LAYERS = [
   {
-    label: 'Client',
-    icon: <Zap className="w-4 h-4" />,
-    items: ['curl / HTTP client', 'Next.js frontend', 'SSE consumer'],
-    color: 'from-slate-700/40 to-slate-800/40 border-slate-600/30',
+    label: 'Client Layer',
+    icon: <Zap className="w-3.5 h-3.5" />,
+    items: ['curl / HTTP', 'Next.js UI', 'SSE consumer'],
+    color: 'border-slate-700/50 bg-slate-800/20',
     textColor: 'text-slate-400',
+    dotColor: 'bg-slate-500',
   },
   {
     label: 'FastAPI (ASGI)',
-    icon: <Cpu className="w-4 h-4" />,
-    items: ['Pydantic v2 validation', 'CORS middleware', 'lifespan context', 'OpenAPI docs'],
-    color: 'from-teal-900/30 to-teal-800/20 border-teal-600/30',
+    icon: <Cpu className="w-3.5 h-3.5" />,
+    items: ['Pydantic v2', 'CORS', 'lifespan ctx', 'OpenAPI'],
+    color: 'border-teal-500/25 bg-teal-900/10',
     textColor: 'text-teal-400',
+    dotColor: 'bg-teal-500',
   },
   {
     label: 'Service Layer',
-    icon: <GitMerge className="w-4 h-4" />,
-    items: ['IngestionPipeline', 'HybridRetriever (RRF)', 'RAGChain + streaming', 'EmbeddingService'],
-    color: 'from-indigo-900/30 to-indigo-800/20 border-indigo-600/30',
-    textColor: 'text-indigo-400',
+    icon: <GitMerge className="w-3.5 h-3.5" />,
+    items: ['IngestionPipeline', 'HybridRetriever', 'RAGChain', 'EmbeddingService'],
+    color: 'border-cyan-500/25 bg-cyan-900/10',
+    textColor: 'text-cyan-400',
+    dotColor: 'bg-cyan-500',
   },
   {
     label: 'Storage',
-    icon: <Database className="w-4 h-4" />,
-    items: ['ChromaDB (cosine/HNSW)', 'BM25 in-memory index', 'Document registry'],
-    color: 'from-purple-900/30 to-purple-800/20 border-purple-600/30',
-    textColor: 'text-purple-400',
+    icon: <Database className="w-3.5 h-3.5" />,
+    items: ['ChromaDB HNSW', 'BM25 index', 'Doc registry'],
+    color: 'border-sky-500/25 bg-sky-900/10',
+    textColor: 'text-sky-400',
+    dotColor: 'bg-sky-500',
   },
 ]
 
 const HYBRID_FLOW = [
-  { label: 'User Query', bg: 'bg-slate-700/40 border-slate-600/30', text: 'text-slate-300' },
-  { label: 'Embed → Vec Search', bg: 'bg-indigo-900/40 border-indigo-600/30', text: 'text-indigo-300' },
-  { label: 'Tokenize → BM25', bg: 'bg-purple-900/40 border-purple-600/30', text: 'text-purple-300' },
-  { label: 'RRF Fusion', bg: 'bg-emerald-900/40 border-emerald-600/30', text: 'text-emerald-300' },
-  { label: 'LLM Generation', bg: 'bg-yellow-900/40 border-yellow-600/30', text: 'text-yellow-300' },
-  { label: 'Grounded Answer', bg: 'bg-cyan-900/40 border-cyan-600/30', text: 'text-cyan-300' },
+  { label: 'User Query', bg: 'bg-slate-800/60 border-slate-700/40', text: 'text-slate-300' },
+  { label: 'Vec Embed', bg: 'bg-cyan-900/30 border-cyan-600/25', text: 'text-cyan-300' },
+  { label: 'BM25 Rank', bg: 'bg-sky-900/30 border-sky-600/25', text: 'text-sky-300' },
+  { label: 'RRF Fusion', bg: 'bg-teal-900/30 border-teal-600/25', text: 'text-teal-300' },
+  { label: 'GPT-4o', bg: 'bg-blue-900/30 border-blue-600/25', text: 'text-blue-300' },
+  { label: 'Answer + Citations', bg: 'bg-cyan-900/30 border-cyan-500/40', text: 'text-cyan-300' },
 ]
 
 export default function ArchitectureDiagram({ compact = false }: ArchitectureDiagramProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* RAG Pipeline Flow */}
-      <div className="glass rounded-2xl p-6 md:p-8 border border-indigo-500/15">
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-          <Search className="w-4 h-4 text-indigo-400" />
+      <div className="glass-card rounded-xl p-6 border border-cyan-500/12">
+        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+          <Search className="w-3.5 h-3.5 text-cyan-500" />
           RAG Pipeline — Query Flow
         </h3>
 
-        {/* Horizontal flow */}
         <div className="flex flex-wrap items-center gap-2 justify-center">
           {HYBRID_FLOW.map((step, i) => (
             <div key={step.label} className="flex items-center gap-2">
               <div
                 className={`px-3 py-2 rounded-lg border text-xs font-medium
-                             ${step.bg} ${step.text} text-center min-w-[110px]`}
+                             ${step.bg} ${step.text} text-center min-w-[96px] font-mono`}
               >
                 {step.label}
               </div>
               {i < HYBRID_FLOW.length - 1 && (
-                <ArrowRight className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
+                <ArrowRight className="w-3 h-3 text-cyan-600/40 flex-shrink-0" />
               )}
             </div>
           ))}
         </div>
 
-        {/* Concurrent annotation */}
-        <div className="mt-6 flex justify-center">
-          <div className="flex items-start gap-6 text-xs text-slate-500">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-indigo-500" />
-              Vec Search runs concurrently with BM25 via asyncio.gather
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              RRF fusion: α × 1/(k+rank_sem) + (1-α) × 1/(k+rank_bm25)
-            </div>
+        <div className="mt-5 flex flex-wrap justify-center gap-6 text-xs text-slate-600">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/60" />
+            Vec + BM25 run concurrently via asyncio.gather
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-500/60" />
+            RRF: α×1/(k+rank_sem) + (1-α)×1/(k+rank_bm25)
           </div>
         </div>
       </div>
 
       {/* System Layers */}
-      <div className="glass rounded-2xl p-6 md:p-8 border border-purple-500/15">
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-          <FileText className="w-4 h-4 text-purple-400" />
+      <div className="glass-card rounded-xl p-6 border border-sky-500/12">
+        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+          <FileText className="w-3.5 h-3.5 text-sky-500" />
           System Layers
         </h3>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {PIPELINE_LAYERS.map((layer, i) => (
             <div key={layer.label}>
-              <div
-                className={`rounded-xl p-4 border bg-gradient-to-r ${layer.color}`}
-              >
+              <div className={`rounded-lg p-3.5 border ${layer.color}`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={layer.textColor}>{layer.icon}</span>
-                  <span className={`font-semibold text-sm ${layer.textColor}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${layer.dotColor}`} />
+                  <span className={`font-semibold text-xs ${layer.textColor} font-mono`}>
                     {layer.label}
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {layer.items.map((item) => (
                     <span
                       key={item}
-                      className="text-xs px-2 py-0.5 rounded bg-black/20 text-slate-400"
+                      className="text-[10px] px-2 py-0.5 rounded-md bg-black/20 text-slate-500 font-mono border border-white/[0.04]"
                     >
                       {item}
                     </span>
@@ -120,7 +120,7 @@ export default function ArchitectureDiagram({ compact = false }: ArchitectureDia
               </div>
               {i < PIPELINE_LAYERS.length - 1 && (
                 <div className="flex justify-center my-1">
-                  <ArrowDown className="w-3.5 h-3.5 text-slate-700" />
+                  <ArrowDown className="w-3 h-3 text-cyan-600/25" />
                 </div>
               )}
             </div>
@@ -128,38 +128,38 @@ export default function ArchitectureDiagram({ compact = false }: ArchitectureDia
         </div>
       </div>
 
-      {/* Ingestion pipeline (shown only in non-compact mode) */}
+      {/* Ingestion pipeline — non-compact only */}
       {!compact && (
-        <div className="glass rounded-2xl p-6 md:p-8 border border-emerald-500/15">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-emerald-400" />
+        <div className="glass-card rounded-xl p-6 border border-teal-500/12">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
+            <Zap className="w-3.5 h-3.5 text-teal-500" />
             Async Ingestion Pipeline
           </h3>
 
           <div className="flex flex-wrap items-center gap-2 justify-center">
             {[
-              { label: 'Upload', detail: 'multipart/form-data', color: 'border-slate-600/30 text-slate-300' },
-              { label: 'Extract', detail: 'PDF / HTML / TXT', color: 'border-cyan-600/30 text-cyan-300' },
-              { label: 'Clean', detail: 'normalize text', color: 'border-blue-600/30 text-blue-300' },
-              { label: 'Chunk', detail: '3 strategies', color: 'border-indigo-600/30 text-indigo-300' },
-              { label: 'Embed', detail: 'batch=100', color: 'border-purple-600/30 text-purple-300' },
-              { label: 'Index', detail: 'ChromaDB + BM25', color: 'border-emerald-600/30 text-emerald-300' },
+              { label: 'Upload', detail: 'multipart', color: 'border-slate-700/40 text-slate-400' },
+              { label: 'Extract', detail: 'PDF/HTML/TXT', color: 'border-teal-600/25 text-teal-400' },
+              { label: 'Clean', detail: 'normalize', color: 'border-cyan-600/25 text-cyan-400' },
+              { label: 'Chunk', detail: '3 strategies', color: 'border-sky-600/25 text-sky-400' },
+              { label: 'Embed', detail: 'batch=100', color: 'border-blue-600/25 text-blue-400' },
+              { label: 'Index', detail: 'Chroma+BM25', color: 'border-teal-600/35 text-teal-300' },
             ].map((step, i, arr) => (
               <div key={step.label} className="flex items-center gap-2">
-                <div className={`glass border rounded-lg px-3 py-2 text-center min-w-[90px] ${step.color}`}>
-                  <div className="text-xs font-semibold">{step.label}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{step.detail}</div>
+                <div className={`glass-dark border rounded-lg px-3 py-2 text-center min-w-[80px] ${step.color}`}>
+                  <div className="text-[11px] font-semibold font-mono">{step.label}</div>
+                  <div className="text-[10px] text-slate-600 mt-0.5">{step.detail}</div>
                 </div>
                 {i < arr.length - 1 && (
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
+                  <ArrowRight className="w-3 h-3 text-cyan-600/30 flex-shrink-0" />
                 )}
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-slate-500 text-center mt-4">
-            Upload returns immediately (status=pending) · Semaphore(5) limits concurrent ingestions ·
-            asyncio.create_task runs pipeline in background
+          <p className="text-[11px] text-slate-700 text-center mt-4 font-mono">
+            Upload returns immediately (status=pending) · Semaphore(5) limits concurrency · asyncio.create_task runs pipeline
           </p>
         </div>
       )}

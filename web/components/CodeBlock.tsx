@@ -9,33 +9,31 @@ interface CodeBlockProps {
   code: string
 }
 
-// Minimal syntax highlighter — no external deps, uses regex token colorization
 function tokenize(code: string, language: string): string {
   if (language === 'bash') {
     return code
-      .replace(/(&amp;|&lt;|&gt;)/g, (m) => m) // keep entities
-      .replace(/(#.+$)/gm, '<span class="text-slate-500">$1</span>')
-      .replace(/("(?:[^"\\]|\\.)*")/g, '<span class="text-emerald-300">$1</span>')
-      .replace(/(\'(?:[^\'\\]|\\.)*\')/g, '<span class="text-emerald-300">$1</span>')
-      .replace(/\b(curl|POST|GET|DELETE|PUT)\b/g, '<span class="text-indigo-400 font-semibold">$1</span>')
-      .replace(/(-[A-Za-z]+|--[a-z-]+)/g, '<span class="text-yellow-300">$1</span>')
-      .replace(/(https?:\/\/[^\s]+)/g, '<span class="text-cyan-300">$1</span>')
-      .replace(/(\{|\}|\[|\])/g, '<span class="text-slate-400">$1</span>')
-      .replace(/"([^"]*)":/g, '<span class="text-sky-300">"$1"</span>:')
+      .replace(/(#.+$)/gm, '<span class="text-slate-600 italic">$1</span>')
+      .replace(/("(?:[^"\\]|\\.)*")/g, '<span class="text-teal-300">$1</span>')
+      .replace(/(\'(?:[^\'\\]|\\.)*\')/g, '<span class="text-teal-300">$1</span>')
+      .replace(/\b(curl|POST|GET|DELETE|PUT|PATCH)\b/g, '<span class="text-cyan-400 font-semibold">$1</span>')
+      .replace(/(-[A-Za-z]+|--[a-z-]+)/g, '<span class="text-sky-300">$1</span>')
+      .replace(/(https?:\/\/[^\s"\\]+)/g, '<span class="text-cyan-300">$1</span>')
+      .replace(/(\{|\}|\[|\])/g, '<span class="text-slate-500">$1</span>')
+      .replace(/"([^"<>{}[\]]+)":/g, '<span class="text-sky-300">"$1"</span>:')
   }
 
   if (language === 'python') {
     return code
-      .replace(/(#.+$)/gm, '<span class="text-slate-500 italic">$1</span>')
-      .replace(/("""[\s\S]*?""")/g, '<span class="text-emerald-300/80">$1</span>')
-      .replace(/\b(async|await|def|class|return|from|import|if|else|for|in|not|and|or|True|False|None|with|yield|raise|try|except)\b/g,
-        '<span class="text-indigo-300 font-medium">$1</span>')
+      .replace(/(#.+$)/gm, '<span class="text-slate-600 italic">$1</span>')
+      .replace(/("""[\s\S]*?""")/g, '<span class="text-teal-300/80">$1</span>')
+      .replace(/\b(async|await|def|class|return|from|import|if|else|elif|for|in|not|and|or|True|False|None|with|yield|raise|try|except|finally|pass|break|continue|lambda|as|is)\b/g,
+        '<span class="text-cyan-400 font-medium">$1</span>')
       .replace(/\b(self|cls)\b/g, '<span class="text-orange-300">$1</span>')
-      .replace(/(f?"|')(?:[^"'\\]|\\.)*\1/g, '<span class="text-emerald-300">$&</span>')
-      .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-yellow-300">$1</span>')
+      .replace(/(f?"|')(?:[^"'\\]|\\.)*\1/g, '<span class="text-teal-300">$&</span>')
+      .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-sky-300">$1</span>')
       .replace(/(@\w+)/g, '<span class="text-pink-400">$1</span>')
-      .replace(/\b(str|int|float|bool|list|dict|tuple|UUID|None|datetime)\b/g,
-        '<span class="text-cyan-300">$1</span>')
+      .replace(/\b(str|int|float|bool|list|dict|tuple|UUID|None|datetime|Optional|List|Dict|Any|Union)\b/g,
+        '<span class="text-sky-400">$1</span>')
   }
 
   return code
@@ -59,35 +57,35 @@ export default function CodeBlock({ title, language, code }: CodeBlockProps) {
   )
 
   return (
-    <div className="glass rounded-xl overflow-hidden border border-slate-700/50">
+    <div className="glass-card rounded-xl overflow-hidden border border-cyan-500/10">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-3
-                      bg-slate-800/60 border-b border-slate-700/50">
-        <div className="flex items-center gap-2.5">
+      <div className="flex items-center justify-between px-4 py-2.5
+                      bg-navy-900/80 border-b border-cyan-500/8">
+        <div className="flex items-center gap-3">
           {/* Traffic lights */}
           <div className="flex gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500/70" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
-            <span className="w-3 h-3 rounded-full bg-green-500/70" />
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+            <span className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <Terminal className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium">{title}</span>
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <Terminal className="w-3 h-3" />
+            <span className="text-xs font-mono text-slate-400">{title}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-600 uppercase tracking-wider">{language}</span>
+          <span className="text-[10px] text-slate-700 uppercase tracking-wider font-mono">{language}</span>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200
-                       px-2 py-1 rounded bg-slate-700/50 hover:bg-slate-700
-                       transition-all duration-150"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-400
+                       px-2.5 py-1 rounded-md bg-cyan-500/5 hover:bg-cyan-500/10 border border-cyan-500/10
+                       hover:border-cyan-500/20 transition-all duration-150"
           >
             {copied ? (
               <>
-                <Check className="w-3 h-3 text-emerald-400" />
-                <span className="text-emerald-400">Copied</span>
+                <Check className="w-3 h-3 text-teal-400" />
+                <span className="text-teal-400">Copied</span>
               </>
             ) : (
               <>
@@ -101,10 +99,10 @@ export default function CodeBlock({ title, language, code }: CodeBlockProps) {
 
       {/* Code content */}
       <div className="overflow-x-auto">
-        <pre className="p-5 text-sm code-block leading-relaxed">
+        <pre className="p-5 text-sm code-block leading-relaxed bg-[#020617]">
           <code
             dangerouslySetInnerHTML={{ __html: highlighted }}
-            className="text-slate-300"
+            className="text-slate-400"
           />
         </pre>
       </div>

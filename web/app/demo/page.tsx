@@ -3,66 +3,108 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ChatInterface from '@/components/ChatInterface'
-import { FileText, Search, Cpu } from 'lucide-react'
+import { Search, FileText, Cpu, Zap, Database } from 'lucide-react'
+
+const PIPELINE_STEPS = [
+  {
+    icon: <FileText className="w-4 h-4" />,
+    title: 'Upload & Extract',
+    desc: 'PDF, TXT, MD, DOCX parsed and text extracted with boilerplate removal',
+    color: 'text-cyan-400 bg-cyan-500/8 border-cyan-500/20',
+  },
+  {
+    icon: <Zap className="w-4 h-4" />,
+    title: 'Chunk & Embed',
+    desc: '512-token recursive chunks with 50-token overlap · OpenAI embeddings (1536d)',
+    color: 'text-sky-400 bg-sky-500/8 border-sky-500/20',
+  },
+  {
+    icon: <Search className="w-4 h-4" />,
+    title: 'Hybrid Retrieval',
+    desc: 'Semantic + BM25 search run concurrently · fused via Reciprocal Rank Fusion',
+    color: 'text-teal-400 bg-teal-500/8 border-teal-500/20',
+  },
+  {
+    icon: <Cpu className="w-4 h-4" />,
+    title: 'Grounded Answer',
+    desc: 'GPT-4o generates response with [Source N] citations from retrieved chunks',
+    color: 'text-blue-400 bg-blue-500/8 border-blue-500/20',
+  },
+]
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen grid-bg">
+    <div className="min-h-screen bg-[#020617] grid-bg">
       <Header />
 
-      <main className="pt-24 pb-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <main className="pt-20 pb-16 px-4">
+        <div className="max-w-7xl mx-auto">
+
           {/* Page header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full
-                            bg-emerald-500/10 border border-emerald-500/30
-                            text-emerald-300 text-sm font-medium mb-6">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              Interactive Demo — Client-Side Simulation
+          <div className="pt-6 pb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Database className="w-4 h-4 text-cyan-500/60" />
+              <span className="text-xs font-mono text-cyan-500/50 uppercase tracking-widest">
+                Interactive Demo
+              </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="gradient-text">RAG Chat Demo</span>
-            </h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              Experience the RAG pipeline in action. Ask questions about documents from a
-              simulated knowledge base covering AI systems, FastAPI architecture, and more.
-            </p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-100 mb-2">
+                  Document<span className="gradient-text"> RAG Chat</span>
+                </h1>
+                <p className="text-slate-500 text-sm max-w-lg">
+                  Upload any document — the system chunks it, embeds it, then answers questions
+                  using hybrid search with real source citations.
+                </p>
+              </div>
+
+              {/* Pipeline steps pill row */}
+              <div className="hidden lg:flex items-center gap-2">
+                {PIPELINE_STEPS.map((step, i) => (
+                  <div key={step.title} className="flex items-center gap-2">
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border
+                                    text-[11px] font-medium ${step.color}`}>
+                      {step.icon}
+                      <span>{step.title}</span>
+                    </div>
+                    {i < PIPELINE_STEPS.length - 1 && (
+                      <span className="text-slate-700">→</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* How it works strip */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            {[
-              {
-                icon: <Search className="w-5 h-5 text-indigo-400" />,
-                title: 'Hybrid Retrieval',
-                desc: 'Semantic + BM25 search fused with RRF to find the most relevant chunks',
-                bg: 'bg-indigo-500/10 border-indigo-500/20',
-              },
-              {
-                icon: <FileText className="w-5 h-5 text-purple-400" />,
-                title: 'Context Assembly',
-                desc: 'Top-k chunks injected into the prompt with [Source N] reference markers',
-                bg: 'bg-purple-500/10 border-purple-500/20',
-              },
-              {
-                icon: <Cpu className="w-5 h-5 text-emerald-400" />,
-                title: 'Grounded Generation',
-                desc: 'GPT-4o generates answers citing specific sources from your documents',
-                bg: 'bg-emerald-500/10 border-emerald-500/20',
-              },
-            ].map(({ icon, title, desc, bg }) => (
-              <div key={title} className={`glass rounded-xl p-4 border ${bg} flex gap-3`}>
-                <div className="flex-shrink-0 mt-0.5">{icon}</div>
+          {/* Pipeline steps — mobile */}
+          <div className="lg:hidden grid grid-cols-2 gap-3 mb-6">
+            {PIPELINE_STEPS.map((step) => (
+              <div key={step.title}
+                className={`glass-card rounded-xl p-3.5 border flex gap-2.5 ${step.color}`}>
+                <div className="flex-shrink-0 mt-0.5">{step.icon}</div>
                 <div>
-                  <div className="font-semibold text-slate-200 text-sm">{title}</div>
-                  <div className="text-xs text-slate-400 mt-1">{desc}</div>
+                  <div className="text-[11px] font-semibold mb-0.5">{step.title}</div>
+                  <div className="text-[10px] text-slate-600">{step.desc}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Main chat interface */}
+          {/* Main split-screen interface */}
           <ChatInterface />
+
+          {/* Footer info */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-700 font-mono">
+            <div className="flex items-center gap-4">
+              <span>Embedding: text-embedding-3-small (1536d)</span>
+              <span>·</span>
+              <span>LLM: GPT-4o (simulated)</span>
+              <span>·</span>
+              <span>Vector DB: ChromaDB HNSW</span>
+            </div>
+            <span>Client-side simulation — production system connects to FastAPI backend</span>
+          </div>
         </div>
       </main>
 

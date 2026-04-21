@@ -1,53 +1,108 @@
 import Link from 'next/link'
-import { Brain, GitBranch } from 'lucide-react'
+import { Database, GitBranch, ExternalLink } from 'lucide-react'
+
+const TECH_STACK = [
+  { name: 'FastAPI', color: 'text-teal-400 border-teal-500/20 bg-teal-500/5' },
+  { name: 'Pydantic v2', color: 'text-rose-400 border-rose-500/20 bg-rose-500/5' },
+  { name: 'ChromaDB', color: 'text-orange-400 border-orange-500/20 bg-orange-500/5' },
+  { name: 'GPT-4o', color: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/5' },
+  { name: 'asyncio', color: 'text-sky-400 border-sky-500/20 bg-sky-500/5' },
+  { name: 'Docker', color: 'text-blue-400 border-blue-500/20 bg-blue-500/5' },
+]
 
 export default function Footer() {
   return (
-    <footer className="border-t border-indigo-500/10 py-10 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Brand */}
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40
-                            flex items-center justify-center">
-              <Brain className="w-3.5 h-3.5 text-indigo-400" />
-            </div>
-            <span className="font-bold text-slate-300 text-sm">RAG Document Intelligence</span>
-          </div>
-
-          {/* Links */}
-          <div className="flex items-center gap-6 text-sm text-slate-500">
-            <Link href="/" className="hover:text-slate-300 transition-colors">Overview</Link>
-            <Link href="/demo" className="hover:text-slate-300 transition-colors">Demo</Link>
-            <Link href="/architecture" className="hover:text-slate-300 transition-colors">Architecture</Link>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-slate-300 transition-colors"
-            >
-              <GitBranch className="w-3.5 h-3.5" />
-              Source
-            </a>
-          </div>
-
-          {/* Stack badges */}
-          <div className="flex flex-wrap gap-2 justify-center">
-            {['FastAPI', 'Pydantic v2', 'ChromaDB', 'GPT-4o'].map((tech) => (
-              <span
-                key={tech}
-                className="px-2 py-0.5 text-xs rounded-full bg-slate-800 text-slate-400 border border-slate-700"
-              >
-                {tech}
+    <footer className="border-t border-cyan-500/8 bg-[#020617]">
+      {/* Top section */}
+      <div className="max-w-7xl mx-auto px-4 pt-10 pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {/* Brand column */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded bg-cyan-500/10 border border-cyan-500/25
+                              flex items-center justify-center">
+                <Database className="w-3 h-3 text-cyan-400" />
+              </div>
+              <span className="font-bold text-slate-300 text-sm tracking-wide">
+                RAG Document Intelligence
               </span>
-            ))}
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed max-w-xs">
+              Production-grade Retrieval-Augmented Generation pipeline demonstrating
+              senior Python and AI engineering capabilities.
+            </p>
+          </div>
+
+          {/* Navigation column */}
+          <div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              Navigation
+            </div>
+            <div className="space-y-2">
+              {[
+                { href: '/', label: 'Overview' },
+                { href: '/demo', label: 'Live Demo' },
+                { href: '/architecture', label: 'Architecture' },
+              ].map(({ href, label }) => (
+                <div key={href}>
+                  <Link
+                    href={href}
+                    className="text-xs text-slate-500 hover:text-cyan-400 transition-colors duration-150"
+                  >
+                    {label}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Resources column */}
+          <div>
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              Resources
+            </div>
+            <div className="space-y-2">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-400 transition-colors duration-150"
+              >
+                <GitBranch className="w-3 h-3" />
+                Source Code
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+              <a
+                href="http://localhost:8000/docs"
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-400 transition-colors duration-150"
+              >
+                <ExternalLink className="w-3 h-3" />
+                API Docs (local)
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-800/50 text-center">
-          <p className="text-xs text-slate-600">
-            Portfolio project demonstrating production-grade Python + AI engineering.
-            FastAPI · Pydantic v2 · asyncio · RAG · Hybrid Search · Streaming LLM.
+        {/* Tech stack */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {TECH_STACK.map((tech) => (
+            <span
+              key={tech.name}
+              className={`px-2 py-0.5 text-[10px] font-mono rounded border ${tech.color}`}
+            >
+              {tech.name}
+            </span>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="pt-4 border-t border-slate-800/60 flex flex-col sm:flex-row items-center
+                        justify-between gap-3">
+          <p className="text-[11px] text-slate-700 font-mono">
+            FastAPI · Pydantic v2 · asyncio · RAG · Hybrid Search · SSE Streaming
+          </p>
+          <p className="text-[11px] text-slate-700">
+            Portfolio — Senior Python + AI Engineer
           </p>
         </div>
       </div>

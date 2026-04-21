@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Brain, GitBranch } from 'lucide-react'
+import { Database, GitBranch, Activity } from 'lucide-react'
 
 const NAV_LINKS = [
   { href: '/', label: 'Overview' },
-  { href: '/demo', label: 'Demo' },
+  { href: '/demo', label: 'Live Demo' },
   { href: '/architecture', label: 'Architecture' },
 ]
 
@@ -14,32 +14,39 @@ export default function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-indigo-500/10">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-cyan-500/10">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40
-                          flex items-center justify-center group-hover:bg-indigo-600/50
-                          transition-colors duration-200">
-            <Brain className="w-4 h-4 text-indigo-400" />
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="relative w-7 h-7 rounded-md bg-cyan-500/10 border border-cyan-500/30
+                          flex items-center justify-center group-hover:bg-cyan-500/20
+                          transition-all duration-200">
+            <Database className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-cyan-400 rounded-full
+                             opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
-          <span className="font-bold text-slate-200 text-sm hidden sm:block">
-            RAG<span className="text-indigo-400">·</span>Intelligence
-          </span>
+          <div className="hidden sm:flex flex-col">
+            <span className="font-bold text-slate-200 text-xs leading-none tracking-wide">
+              RAG<span className="text-cyan-400">·</span>INTELLIGENCE
+            </span>
+            <span className="text-[10px] text-slate-600 leading-none mt-0.5 font-mono">
+              document intelligence system
+            </span>
+          </div>
         </Link>
 
         {/* Navigation */}
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-0.5">
           {NAV_LINKS.map(({ href, label }) => {
             const isActive = pathname === href
             return (
               <Link
                 key={href}
                 href={href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-all duration-200
                   ${isActive
-                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                    ? 'nav-active'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
                   }`}
               >
                 {label}
@@ -48,17 +55,27 @@ export default function Header() {
           })}
         </nav>
 
-        {/* GitHub link */}
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400
-                     hover:text-slate-200 hover:bg-white/5 transition-all duration-200"
-        >
-          <GitBranch className="w-4 h-4" />
-          <span className="hidden sm:block">GitHub</span>
-        </a>
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* Live indicator */}
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                          bg-cyan-500/5 border border-cyan-500/15 text-xs text-slate-500">
+            <Activity className="w-3 h-3 text-cyan-500" />
+            <span className="font-mono">v1.0.0</span>
+          </div>
+
+          {/* GitHub */}
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs text-slate-500
+                       hover:text-slate-300 hover:bg-white/[0.04] transition-all duration-200"
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+            <span className="hidden sm:block">GitHub</span>
+          </a>
+        </div>
       </div>
     </header>
   )
