@@ -94,7 +94,8 @@ const FEATURES: Array<ComponentProps<typeof FeatureCard>> = [
 ]
 
 const UPLOAD_EXAMPLE = `# Upload a document
-curl -X POST http://localhost:8000/api/v1/documents/upload \\
+# Replace with your deployed API URL
+curl -X POST https://api.example.com/api/v1/documents/upload \\
   -F "file=@technical_spec.pdf" \\
   -F "title=Q4 Architecture RFC" \\
   -F "chunking_strategy=recursive"
@@ -109,7 +110,8 @@ curl -X POST http://localhost:8000/api/v1/documents/upload \\
 }`
 
 const SEARCH_EXAMPLE = `# Hybrid search (70% semantic + 30% BM25)
-curl -X POST http://localhost:8000/api/v1/search/ \\
+# Replace with your deployed API URL
+curl -X POST https://api.example.com/api/v1/search/ \\
   -H "Content-Type: application/json" \\
   -d '{
     "query": "microservices authentication flow",
@@ -131,7 +133,8 @@ curl -X POST http://localhost:8000/api/v1/search/ \\
 }`
 
 const CHAT_EXAMPLE = `# Streaming RAG chat
-curl -X POST http://localhost:8000/api/v1/chat/ \\
+# Replace with your deployed API URL
+curl -X POST https://api.example.com/api/v1/chat/ \\
   -H "Content-Type: application/json" \\
   -d '{
     "message": "How does the auth middleware handle token expiry?",
@@ -222,7 +225,7 @@ export default function HomePage() {
               <Layers className="w-4 h-4 text-cyan-500" />
             </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/MusaevAkobirSanokulUgli/rag-document-intelligence"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-7 py-3.5 glass-card hover:border-cyan-500/20

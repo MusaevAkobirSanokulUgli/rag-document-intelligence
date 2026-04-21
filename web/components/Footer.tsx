@@ -63,7 +63,7 @@ export default function Footer() {
             </div>
             <div className="space-y-2">
               <a
-                href="https://github.com"
+                href="https://github.com/MusaevAkobirSanokulUgli/rag-document-intelligence"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-400 transition-colors duration-150"
@@ -71,13 +71,6 @@ export default function Footer() {
                 <GitBranch className="w-3 h-3" />
                 Source Code
                 <ExternalLink className="w-2.5 h-2.5" />
-              </a>
-              <a
-                href="http://localhost:8000/docs"
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-400 transition-colors duration-150"
-              >
-                <ExternalLink className="w-3 h-3" />
-                API Docs (local)
               </a>
             </div>
           </div>

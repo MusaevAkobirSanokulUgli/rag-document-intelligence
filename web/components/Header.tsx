@@ -66,7 +66,7 @@ export default function Header() {
 
           {/* GitHub */}
           <a
-            href="https://github.com"
+            href="https://github.com/MusaevAkobirSanokulUgli/rag-document-intelligence"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs text-slate-500
