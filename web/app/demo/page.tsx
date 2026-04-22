@@ -40,6 +40,25 @@ export default function DemoPage() {
       <main className="pt-20 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
 
+          {/* Live DeepSeek banner */}
+          <a href="/live" className="block mt-6 p-4 rounded-2xl transition-all hover:scale-[1.01]"
+            style={{ background: "linear-gradient(135deg, rgba(56,189,248,0.12), rgba(14,165,233,0.06))",
+              border: "1px solid rgba(56,189,248,0.3)" }}>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-sm font-bold uppercase tracking-wider mb-1" style={{ color: "#7DD3FC" }}>
+                  🔥 Live DeepSeek-Powered RAG — Now Available
+                </div>
+                <div className="text-xs" style={{ color: "#94A3B8" }}>
+                  Paste your own document, ask questions, get grounded answers with [Source N] citations.
+                </div>
+              </div>
+              <span className="text-xs font-bold px-4 py-2 rounded-xl" style={{ background: "#38BDF8", color: "#0C4A6E" }}>
+                Try it →
+              </span>
+            </div>
+          </a>
+
           {/* Page header */}
           <div className="pt-6 pb-8">
             <div className="flex items-center gap-2 mb-4">
